@@ -1,7 +1,7 @@
 module Tests exposing (updateTest, viewTest)
 
 import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
+import Fuzz exposing (Fuzzer, int, intRange, list, string)
 import Main exposing (..)
 import Test exposing (..)
 import Test.Html.Event as Event
@@ -9,8 +9,8 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (containing, tag, text)
 
 
-continuousIncrementDecrement : Msg -> Model -> Int -> Model
-continuousIncrementDecrement msg currentCounter num =
+continuousIncrementDecrement : Msg -> Int -> Model -> Model
+continuousIncrementDecrement msg num currentCounter =
     let
         nextCounter =
             update msg currentCounter |> Tuple.first
@@ -19,13 +19,18 @@ continuousIncrementDecrement msg currentCounter num =
         currentCounter
 
     else
-        continuousIncrementDecrement msg nextCounter (num - 1)
+        continuousIncrementDecrement msg (num - 1) nextCounter
 
 
 updateTest : Test
 updateTest =
     describe "updateのテスト" <|
-        [ describe "増えるカウンタ"
+        [ fuzz (intRange 0 1000000) "同じ数だけIncrementをしてDecrementをすると元の数字に戻る" <|
+            \randomlyGeneratedNum ->
+                continuousIncrementDecrement Increment randomlyGeneratedNum 0
+                    |> continuousIncrementDecrement Decrement randomlyGeneratedNum
+                    |> Expect.equal 0
+        , describe "増えるカウンタ"
             [ test "カウンタが0のときIncrementされると1になる" <|
                 \() ->
                     update Increment 0
@@ -38,7 +43,7 @@ updateTest =
                         |> Expect.equal 6
             , test "カウンタが0のとき、5回Incrementされると5になる" <|
                 \() ->
-                    continuousIncrementDecrement Increment 0 5
+                    continuousIncrementDecrement Increment 5 0
                         |> Expect.equal 5
             ]
         , describe "減るカウンタ"
