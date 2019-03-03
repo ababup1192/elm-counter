@@ -45,7 +45,7 @@ update msg model =
             update (DecrementN 1) model
 
         IncrementN n ->
-            ( model + 1, Cmd.none )
+            ( model + n, Cmd.none )
 
         DecrementN n ->
             ( model - 1, Cmd.none )
