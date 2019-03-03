@@ -1,8 +1,9 @@
-module Tests exposing (updateTest, viewTest)
+module Tests exposing (oneToHundredTest, updateTest, viewTest)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string)
 import Main exposing (..)
+import Random
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -86,6 +87,28 @@ updateTest =
                         |> Tuple.first
                         |> Expect.equal -2
             ]
+        ]
+
+
+oneToHundredTest : Test
+oneToHundredTest =
+    describe "oneToHundredのテスト"
+        [ test "Seed 1 のとき 1以上100以下の数値が生成される" <|
+            \() ->
+                Random.step oneToHundred (Random.initialSeed 1)
+                    |> Tuple.first
+                    |> Expect.all
+                        [ Expect.atLeast 1
+                        , Expect.atMost 100
+                        ]
+        , test "Seed 5 のとき 1以上100以下の数値が生成される" <|
+            \() ->
+                Random.step oneToHundred (Random.initialSeed 5)
+                    |> Tuple.first
+                    |> Expect.all
+                        [ Expect.atLeast 1
+                        , Expect.atMost 100
+                        ]
         ]
 
 

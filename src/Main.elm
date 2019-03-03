@@ -1,10 +1,11 @@
-port module Main exposing (Model, Msg(..), init, main, update, view)
+port module Main exposing (Model, Msg(..), init, main, oneToHundred, update, view)
 
 import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Random
 
 
 
@@ -49,6 +50,11 @@ update msg model =
 
         DecrementN n ->
             ( model - n, Cmd.none )
+
+
+oneToHundred : Random.Generator Int
+oneToHundred =
+    Random.int 1 100
 
 
 
