@@ -62,6 +62,18 @@ updateTest =
                     continuousIncrementDecrement Decrement 5 5
                         |> Expect.equal 0
             ]
+        , describe "n増えるカウンタ"
+            [ test "カウンタが0のとIncrementN 3されると3になる" <|
+                \() ->
+                    update (IncrementN 3) 0
+                        |> Tuple.first
+                        |> Expect.equal 3
+            , test "カウンタが5のとIncrementN 5されると10になる" <|
+                \() ->
+                    update (IncrementN 5) 5
+                        |> Tuple.first
+                        |> Expect.equal 10
+            ]
         ]
 
 
