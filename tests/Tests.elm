@@ -10,60 +10,10 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (containing, tag, text)
 
 
-continuousIncrementDecrement : Msg -> Int -> Model -> Model
-continuousIncrementDecrement msg num currentCounter =
-    let
-        nextCounter =
-            update msg currentCounter |> Tuple.first
-    in
-    if num == 0 then
-        currentCounter
-
-    else
-        continuousIncrementDecrement msg (num - 1) nextCounter
-
-
 updateTest : Test
 updateTest =
     describe "updateのテスト" <|
-        [ fuzz (intRange 0 100) "同じ数だけIncrementをしてDecrementをすると元の数字に戻る" <|
-            \randomlyGeneratedNum ->
-                continuousIncrementDecrement Increment randomlyGeneratedNum 0
-                    |> continuousIncrementDecrement Decrement randomlyGeneratedNum
-                    |> Expect.equal 0
-        , describe "増えるカウンタ"
-            [ test "カウンタが0のときIncrementされると1になる" <|
-                \() ->
-                    update Increment 0
-                        |> Tuple.first
-                        |> Expect.equal 1
-            , test "カウンタが5のときIncrementされると6になる" <|
-                \() ->
-                    update Increment 5
-                        |> Tuple.first
-                        |> Expect.equal 6
-            , test "カウンタが0のとき、5回Incrementされると5になる" <|
-                \() ->
-                    continuousIncrementDecrement Increment 5 0
-                        |> Expect.equal 5
-            ]
-        , describe "減るカウンタ"
-            [ test "カウンタが0のとDecrementされると-1になる" <|
-                \() ->
-                    update Decrement 0
-                        |> Tuple.first
-                        |> Expect.equal -1
-            , test "カウンタが5のとDecrementされると4になる" <|
-                \() ->
-                    update Decrement 5
-                        |> Tuple.first
-                        |> Expect.equal 4
-            , test "カウンタが5のとき、5回Decrementされると5になる" <|
-                \() ->
-                    continuousIncrementDecrement Decrement 5 5
-                        |> Expect.equal 0
-            ]
-        , describe "n増えるカウンタ"
+        [ describe "n増えるカウンタ"
             [ test "カウンタが0のとIncrementN 3されると3になる" <|
                 \() ->
                     update (IncrementN 3) 0

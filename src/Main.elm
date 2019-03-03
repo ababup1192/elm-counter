@@ -40,10 +40,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Increment ->
-            update (IncrementN 1) model
+            ( model, Random.generate IncrementN oneToHundred )
 
         Decrement ->
-            update (DecrementN 1) model
+            ( model, Random.generate DecrementN oneToHundred )
 
         IncrementN n ->
             ( model + n, Cmd.none )
