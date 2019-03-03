@@ -31,15 +31,23 @@ init _ =
 type Msg
     = Increment
     | Decrement
+    | IncrementN Int
+    | DecrementN Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Increment ->
-            ( model + 1, Cmd.none )
+            update (IncrementN 1) model
 
         Decrement ->
+            update (DecrementN 1) model
+
+        IncrementN n ->
+            ( model + 1, Cmd.none )
+
+        DecrementN n ->
             ( model - 1, Cmd.none )
 
 

@@ -25,7 +25,7 @@ continuousIncrementDecrement msg num currentCounter =
 updateTest : Test
 updateTest =
     describe "updateのテスト" <|
-        [ fuzz (intRange 0 1000000) "同じ数だけIncrementをしてDecrementをすると元の数字に戻る" <|
+        [ fuzz (intRange 0 100) "同じ数だけIncrementをしてDecrementをすると元の数字に戻る" <|
             \randomlyGeneratedNum ->
                 continuousIncrementDecrement Increment randomlyGeneratedNum 0
                     |> continuousIncrementDecrement Decrement randomlyGeneratedNum
