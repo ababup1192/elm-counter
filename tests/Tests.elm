@@ -93,17 +93,9 @@ updateTest =
 oneToHundredTest : Test
 oneToHundredTest =
     describe "oneToHundredのテスト"
-        [ test "Seed 1 のとき 1以上100以下の数値が生成される" <|
-            \() ->
-                Random.step oneToHundred (Random.initialSeed 1)
-                    |> Tuple.first
-                    |> Expect.all
-                        [ Expect.atLeast 1
-                        , Expect.atMost 100
-                        ]
-        , test "Seed 5 のとき 1以上100以下の数値が生成される" <|
-            \() ->
-                Random.step oneToHundred (Random.initialSeed 5)
+        [ fuzz (intRange -100000 100000) "どんなシード値でも、1-100までの数値を出す" <|
+            \randomlyGeneratedNum ->
+                Random.step oneToHundred (Random.initialSeed randomlyGeneratedNum)
                     |> Tuple.first
                     |> Expect.all
                         [ Expect.atLeast 1
