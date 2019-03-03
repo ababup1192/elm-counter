@@ -74,6 +74,18 @@ updateTest =
                         |> Tuple.first
                         |> Expect.equal 10
             ]
+        , describe "n減るカウンタ"
+            [ test "カウンタが5のとDecrementN 5されると0になる" <|
+                \() ->
+                    update (DecrementN 5) 5
+                        |> Tuple.first
+                        |> Expect.equal 0
+            , test "カウンタが1のとDecrementN 3されると-2になる" <|
+                \() ->
+                    update (DecrementN 3) 1
+                        |> Tuple.first
+                        |> Expect.equal -2
+            ]
         ]
 
 
