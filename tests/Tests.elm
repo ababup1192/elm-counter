@@ -16,25 +16,29 @@ updateTest =
         [ describe "n増えるカウンタ"
             [ test "カウンタが0のとIncrementN 3されると3になる" <|
                 \() ->
-                    update (IncrementN 3) 0
+                    update (IncrementN 3) (Model 0 Nothing)
                         |> Tuple.first
+                        |> .count
                         |> Expect.equal 3
             , test "カウンタが5のとIncrementN 5されると10になる" <|
                 \() ->
-                    update (IncrementN 5) 5
+                    update (IncrementN 5) (Model 5 Nothing)
                         |> Tuple.first
+                        |> .count
                         |> Expect.equal 10
             ]
         , describe "n減るカウンタ"
             [ test "カウンタが5のとDecrementN 5されると0になる" <|
                 \() ->
-                    update (DecrementN 5) 5
+                    update (DecrementN 5) (Model 5 Nothing)
                         |> Tuple.first
+                        |> .count
                         |> Expect.equal 0
             , test "カウンタが1のとDecrementN 3されると-2になる" <|
                 \() ->
-                    update (DecrementN 3) 1
+                    update (DecrementN 3) (Model 1 Nothing)
                         |> Tuple.first
+                        |> .count
                         |> Expect.equal -2
             ]
         ]
@@ -60,13 +64,13 @@ viewTest =
         [ describe "カウンタの表示"
             [ test "カウンタは0を表示している" <|
                 \() ->
-                    view 0
+                    view (Model 0 Nothing)
                         |> Query.fromHtml
                         |> Query.find [ tag "p" ]
                         |> Query.has [ text "0" ]
             , test "カウンタは15を表示している" <|
                 \() ->
-                    view 15
+                    view (Model 15 Nothing)
                         |> Query.fromHtml
                         |> Query.find [ tag "p" ]
                         |> Query.has [ text "15" ]
@@ -74,14 +78,14 @@ viewTest =
         , describe "増減ボタン"
             [ test "+ボタンはIncrement Msgを発行する" <|
                 \() ->
-                    view 0
+                    view (Model 0 Nothing)
                         |> Query.fromHtml
                         |> Query.find [ tag "button", containing [ text "+" ] ]
                         |> Event.simulate Event.click
                         |> Event.expect Increment
             , test "-ボタンはDecrement Msgを発行する" <|
                 \() ->
-                    view 0
+                    view (Model 0 Nothing)
                         |> Query.fromHtml
                         |> Query.find [ tag "button", containing [ text "-" ] ]
                         |> Event.simulate Event.click

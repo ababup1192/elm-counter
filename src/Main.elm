@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Random
+import Time
 
 
 
@@ -15,12 +16,17 @@ import Random
 
 
 type alias Model =
-    Int
+    { count : Int, mode : Maybe Mode }
+
+
+type Mode
+    = IncrementMode
+    | DecrementMode
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( 0, Cmd.none )
+    ( Model 0 Nothing, Cmd.none )
 
 
 
@@ -32,24 +38,42 @@ init _ =
 type Msg
     = Increment
     | Decrement
+    | Stop
     | IncrementN Int
     | DecrementN Int
+    | Tick Time.Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg ({ count, mode } as model) =
     case msg of
         Increment ->
-            ( model, Random.generate IncrementN oneToHundred )
+            ( { model | mode = Just IncrementMode }, Cmd.none )
 
         Decrement ->
-            ( model, Random.generate DecrementN oneToHundred )
+            ( { model | mode = Just DecrementMode }, Cmd.none )
+
+        Stop ->
+            ( { model | mode = Nothing }, Cmd.none )
 
         IncrementN n ->
-            ( model + n, Cmd.none )
+            ( { model | count = count + n }, Cmd.none )
 
         DecrementN n ->
-            ( model - n, Cmd.none )
+            ( { model | count = count - n }, Cmd.none )
+
+        Tick t ->
+            case mode of
+                Just m ->
+                    case m of
+                        IncrementMode ->
+                            ( { model | count = count + 1 }, Cmd.none )
+
+                        DecrementMode ->
+                            ( { model | count = count - 1 }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 oneToHundred : Random.Generator Int
@@ -64,12 +88,23 @@ oneToHundred =
 
 
 view : Model -> Html Msg
-view model =
+view { count } =
     div [ class "container" ]
         [ button [ onClick Increment ] [ text "+" ]
-        , p [] [ text <| String.fromInt model ]
+        , p [ style "cursor" "pointer", onClick Stop ] [ text <| String.fromInt count ]
         , button [ onClick Decrement ] [ text "-" ]
         ]
+
+
+
+-- ---------------------------
+-- SUBSCRIPTIONS
+-- ---------------------------
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 1000 Tick
 
 
 
@@ -88,5 +123,5 @@ main =
                 { title = "カウンター"
                 , body = [ view m ]
                 }
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
