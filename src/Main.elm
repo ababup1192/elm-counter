@@ -64,15 +64,20 @@ update msg ({ count, mode } as model) =
             ( { model | count = count - n }, Cmd.none )
 
         Tick _ ->
-            case mode of
-                IncrementMode ->
-                    ( { model | count = count + 1 }, Cmd.none )
+            ( { model | count = updateCountByMode mode count }, Cmd.none )
 
-                DecrementMode ->
-                    ( { model | count = count - 1 }, Cmd.none )
 
-                StopMode ->
-                    ( model, Cmd.none )
+updateCountByMode : Mode -> Int -> Int
+updateCountByMode mode currentCount =
+    case mode of
+        IncrementMode ->
+            currentCount + 1
+
+        DecrementMode ->
+            currentCount - 1
+
+        StopMode ->
+            currentCount
 
 
 oneToHundred : Random.Generator Int
