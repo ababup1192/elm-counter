@@ -16,17 +16,18 @@ import Time
 
 
 type alias Model =
-    { count : Int, mode : Maybe Mode }
+    { count : Int, mode : Mode }
 
 
 type Mode
     = IncrementMode
     | DecrementMode
+    | StopMode
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model 0 Nothing, Cmd.none )
+    ( Model 0 StopMode, Cmd.none )
 
 
 
@@ -48,13 +49,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ count, mode } as model) =
     case msg of
         Increment ->
-            ( { model | mode = Just IncrementMode }, Cmd.none )
+            ( { model | mode = IncrementMode }, Cmd.none )
 
         Decrement ->
-            ( { model | mode = Just DecrementMode }, Cmd.none )
+            ( { model | mode = DecrementMode }, Cmd.none )
 
         Stop ->
-            ( { model | mode = Nothing }, Cmd.none )
+            ( { model | mode = StopMode }, Cmd.none )
 
         IncrementN n ->
             ( { model | count = count + n }, Cmd.none )
@@ -64,15 +65,13 @@ update msg ({ count, mode } as model) =
 
         Tick _ ->
             case mode of
-                Just m ->
-                    case m of
-                        IncrementMode ->
-                            ( { model | count = count + 1 }, Cmd.none )
+                IncrementMode ->
+                    ( { model | count = count + 1 }, Cmd.none )
 
-                        DecrementMode ->
-                            ( { model | count = count - 1 }, Cmd.none )
+                DecrementMode ->
+                    ( { model | count = count - 1 }, Cmd.none )
 
-                _ ->
+                StopMode ->
                     ( model, Cmd.none )
 
 
