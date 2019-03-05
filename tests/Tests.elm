@@ -10,37 +10,41 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (containing, tag, text)
 
 
+countTest : String -> Int -> Msg -> Int -> Test
+countTest testCase initialCount msg expectedCount =
+    test testCase <|
+        \() ->
+            update msg (Model initialCount Nothing)
+                |> Tuple.first
+                |> .count
+                |> Expect.equal expectedCount
+
+
 updateTest : Test
 updateTest =
     describe "updateのテスト" <|
-        [ describe "n増えるカウンタ"
-            [ test "カウンタが0のとIncrementN 3されると3になる" <|
-                \() ->
-                    update (IncrementN 3) (Model 0 Nothing)
-                        |> Tuple.first
-                        |> .count
-                        |> Expect.equal 3
-            , test "カウンタが5のとIncrementN 5されると10になる" <|
-                \() ->
-                    update (IncrementN 5) (Model 5 Nothing)
-                        |> Tuple.first
-                        |> .count
-                        |> Expect.equal 10
-            ]
-        , describe "n減るカウンタ"
-            [ test "カウンタが5のとDecrementN 5されると0になる" <|
-                \() ->
-                    update (DecrementN 5) (Model 5 Nothing)
-                        |> Tuple.first
-                        |> .count
-                        |> Expect.equal 0
-            , test "カウンタが1のとDecrementN 3されると-2になる" <|
-                \() ->
-                    update (DecrementN 3) (Model 1 Nothing)
-                        |> Tuple.first
-                        |> .count
-                        |> Expect.equal -2
-            ]
+        [ countTest "カウンタが0のとIncrementN 3されると3になる" 0 (IncrementN 3) 3
+        , countTest "カウンタが5のとIncrementN 5されると10になる" 5 (IncrementN 5) 10
+        , countTest "カウンタが5のとDecrementN 5されると0になる" 5 (DecrementN 5) 0
+        , countTest "カウンタが1のとDecrementN -3されると-2になる" 1 (DecrementN 3) -2
+        , test "+ボタンがクリックされたとき、IncrementModeになる" <|
+            \() ->
+                update Increment (Model 0 Nothing)
+                    |> Tuple.first
+                    |> .mode
+                    |> Expect.equal (Just IncrementMode)
+        , test "-ボタンがクリックされたとき、DecrementModeになる" <|
+            \() ->
+                update Decrement (Model 0 Nothing)
+                    |> Tuple.first
+                    |> .mode
+                    |> Expect.equal (Just DecrementMode)
+        , test "カウントがクリックされたとき、ストップする" <|
+            \() ->
+                update Stop (Model 0 (Just IncrementMode))
+                    |> Tuple.first
+                    |> .mode
+                    |> Expect.equal Nothing
         ]
 
 
@@ -90,5 +94,12 @@ viewTest =
                         |> Query.find [ tag "button", containing [ text "-" ] ]
                         |> Event.simulate Event.click
                         |> Event.expect Decrement
+            , test "カウントをクリックするとはStop Msgを発行する" <|
+                \() ->
+                    view (Model 0 (Just IncrementMode))
+                        |> Query.fromHtml
+                        |> Query.find [ tag "p" ]
+                        |> Event.simulate Event.click
+                        |> Event.expect Stop
             ]
         ]

@@ -1,4 +1,4 @@
-port module Main exposing (Model, Msg(..), init, main, oneToHundred, update, view)
+port module Main exposing (Mode(..), Model, Msg(..), init, main, oneToHundred, update, view)
 
 import Browser
 import Browser.Navigation as Nav
@@ -62,7 +62,7 @@ update msg ({ count, mode } as model) =
         DecrementN n ->
             ( { model | count = count - n }, Cmd.none )
 
-        Tick t ->
+        Tick _ ->
             case mode of
                 Just m ->
                     case m of
